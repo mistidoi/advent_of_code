@@ -65,7 +65,14 @@ class Connection {
     }
 
     value() {
-        //process.stdout.write(this.address + "->");
+        let value = addressMap[this.address].value();
+
+        // implement caching in the addressMap.
+        if (typeof value == "number") {
+            // i.e. if you get a number back eventually, store that numbe
+            // in the addressMap.
+            addressMap[this.address] = new ValueWrapper(value)
+        }
         return addressMap[this.address].value();
     }
 }
@@ -76,7 +83,6 @@ class ValueWrapper {
     }
 
     value() {
-        //process.stdout.write("#" + this.arg1 + "\n");
         return this.arg1;
     }
 }
@@ -146,13 +152,21 @@ fs.readFile('input.txt', 'utf8', function (err, input) {
 
     console.log(addressMap);
 
-    //for (var address in addressMap) {
-    //    console.log(address);
-    //    console.log(addressMap[address].value());
-    //    console.log("\n");
-    //}
+    let a = addressMap['a'].value();
 
-    console.log('a');
-    console.log(addressMap['a'].value())
+    console.log('value for a:');
+    console.log(a);
+
+    // Reset connections (bust the cache)
+    lines.forEach(function (line) {
+        parseLine(line);
+    });
+
+    console.log('setting b = ' + a);
+    addressMap['b'] = new ValueWrapper(a);
+
+    console.log('new value for a:');
+    console.log(addressMap['a'].value());
+
 
 });
